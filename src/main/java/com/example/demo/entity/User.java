@@ -17,6 +17,7 @@ public class User {
     private String name;
     private String email;
     private int age;
+    private String phoneNumber;
 
     public int getAge() {
         return age;
@@ -50,6 +51,14 @@ public class User {
         this.name = name;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneumber(String phoneNo) {
+        this.phoneNumber = phoneNo;
+    }
+
     public User() {
 
     }
@@ -57,6 +66,7 @@ public class User {
     @Override
     public String toString() {
 
-        return "Users{ 'id= }" + getId() + "name: " + getName() + "email: " + getEmail() + "age: " + getAge();
+        return "Users{ 'id= }" + getId() + "name: " + getName() + "email: " + getEmail() + "age: " + getAge()
+                + "phone number: " + getPhoneNumber();
     }
 }
