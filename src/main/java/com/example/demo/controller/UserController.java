@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.UserResponse;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 
@@ -34,14 +35,28 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    // get one user
+    // // get one user
+    // @GetMapping(path = "/user/{userId}")
+    // public ResponseEntity<User> getOneUser(@PathVariable Long userId) {
+    // Optional<User> userOptional = userRepository.findById(userId);
+    // if (userOptional.isPresent()) {
+    // return ResponseEntity.ok(userOptional.get());
+    // } else {
+    // return ResponseEntity.notFound().build();
+    // }
+    // }
+
+    //custom response
     @GetMapping(path = "/user/{userId}")
-    public ResponseEntity<User> getOneUser(@PathVariable Long userId) {
+    public ResponseEntity<UserResponse> getOneUser(@PathVariable Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
-            return ResponseEntity.ok(userOptional.get());
+            User user = userOptional.get();
+            UserResponse response = new UserResponse(200, null, "User found successfully", user);
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.notFound().build();
+            UserResponse response = new UserResponse(404, "Not Found", "User not found", null);
+            return ResponseEntity.status(404).body(response);
         }
     }
 
