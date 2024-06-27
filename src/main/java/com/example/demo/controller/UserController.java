@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.UserResponse;
 import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 
 // @Controller // This means that this class is a Controller
 @RestController
@@ -26,71 +25,70 @@ import com.example.demo.repository.UserRepository;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     // get all users
     @GetMapping(path = "/allusers")
     public @ResponseBody List<User> getAllUsers() {
         // This returns a JSON or XML with the users
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
-    // // get one user
-    // @GetMapping(path = "/user/{userId}")
-    // public ResponseEntity<User> getOneUser(@PathVariable Long userId) {
-    // Optional<User> userOptional = userRepository.findById(userId);
-    // if (userOptional.isPresent()) {
-    // return ResponseEntity.ok(userOptional.get());
-    // } else {
-    // return ResponseEntity.notFound().build();
-    // }
-    // }
-
-    //custom response
     @GetMapping(path = "/user/{userId}")
-    public ResponseEntity<UserResponse> getOneUser(@PathVariable Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+    public ResponseEntity<Map<String, Object>> getOneUser(@PathVariable Long userId) {
+        Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            UserResponse response = new UserResponse(200, null, "User found successfully", user);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok().body(
+                    Map.of(
+                            "status", 200,
+                            "message", "User found",
+                            "data", userOptional.get()));
         } else {
-            UserResponse response = new UserResponse(404, "Not Found", "User not found", null);
-            return ResponseEntity.status(404).body(response);
+            return ResponseEntity.status(404).body(
+                    Map.of(
+                            "status", 404,
+                            "error", "Not Found",
+                            "message", "User not found",
+                            "data", null));
         }
     }
 
-    // create new user
     @PostMapping(path = "/user")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User savedUser = userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "status", 201,
+                        "message", "User created",
+                        "data", createdUser));
     }
 
-    // update a user
     @PutMapping(path = "/user/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User user) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            user.setId(userId); // Ensure the correct ID is set for update
-            User updatedUser = userRepository.save(user);
-            return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Long userId, @RequestBody User user) {
+        User updatedUser = userService.updateUser(userId, user);
+        if (updatedUser != null) {
+            return ResponseEntity.ok().body(
+                    Map.of(
+                            "status", 200,
+                            "message", "User updated",
+                            "data", updatedUser));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(
+                    Map.of(
+                            "status", 404,
+                            "error", "Not Found",
+                            "message", "User not found",
+                            "data", null));
         }
-
     }
 
-    // delete a user
     @DeleteMapping(path = "/user/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            userRepository.deleteById(userId);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.status(204).body(
+                Map.of(
+                        "status", 204,
+                        "message", "User deleted",
+                        "data", null));
     }
-
 }
