@@ -13,11 +13,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String name;
     private String email;
     private int age;
     private String phoneNumber;
+    private String firstName;
+    private String lastName;
+    private String password;
 
     public int getAge() {
         return age;
@@ -43,22 +44,38 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneumber(String phoneNo) {
-        this.phoneNumber = phoneNo;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
     public User() {
 
     }
@@ -66,7 +83,7 @@ public class User {
     @Override
     public String toString() {
 
-        return "Users{ 'id= }" + getId() + "name: " + getName() + "email: " + getEmail() + "age: " + getAge()
-                + "phone number: " + getPhoneNumber();
+        return "Users{ 'id= }" + getId() + "firstName: " + getFirstName() + "Last name: " + getLastName()+ "email: " + getEmail() + "age: " + getAge()
+                + "phone number: " + getPhoneNumber() + "password: " + getPassword();
     }
 }
